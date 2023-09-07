@@ -2388,7 +2388,7 @@ class SMBCommands:
             else:
                 tid = list(connData['ConnectedShares'].keys())[-1] + 1
             connData['ConnectedShares'][tid] = share
-            connData['ConnectedShares'][tid]['shareName'] = path
+            connData['ConnectedShares'][tid]['shareName'] = encodeSMBString(recvPacket['Flags2'], path)
             resp['Tid'] = tid
             # smbServer.log("Connecting Share(%d:%s)" % (tid,path))
         else:
@@ -2402,7 +2402,7 @@ class SMBCommands:
         if path == 'IPC$':
             respData['Service'] = 'IPC'
         else:
-            respData['Service'] = path
+            respData['Service'] = encodeSMBString(recvPacket['Flags2'], path)
         respData['PadLen'] = 0
         respData['NativeFileSystem'] = encodeSMBString(recvPacket['Flags2'], 'NTFS').decode()
 
