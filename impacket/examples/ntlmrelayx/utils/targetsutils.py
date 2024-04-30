@@ -130,7 +130,7 @@ class TargetsProcessor:
         if len(self.generalCandidates) > 0:
             if identity is not None:
                 for target in self.generalCandidates:
-                    tmpTarget = '%s://%s@%s' % (target.scheme, identity.replace('/', '\\'), target.netloc)
+                    tmpTarget = '%s://%s@%s' % (target.scheme, identity.replace('/', '\\'), target.netloc + target.path)
                     match = [x for x in self.finishedAttacks if x.geturl().upper() == tmpTarget.upper()]
                     if len(match) == 0:
                         self.generalCandidates.remove(target)
@@ -150,8 +150,10 @@ class TargetsProcessor:
                 return self.generalCandidates.pop()
         else:
             if len(self.originalTargets) > 0:
+                # Remove credentials from the URLs (otherwise they won't ever match)
+                finishedAttacks = [an_atk._replace(netloc=an_atk.hostname) for an_atk in self.finishedAttacks]
                 self.generalCandidates = [x for x in self.originalTargets if
-                                          x not in self.finishedAttacks and x.username is None]
+                                          x not in finishedAttacks and x.username is None]
 
         if len(self.generalCandidates) == 0:
             if len(self.namedCandidates) == 0:
